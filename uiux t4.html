@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AR/VR Application UI - Intuitive Interactions</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+    :root {
+      --bg-color: rgba(10, 10, 30, 0.85);
+      --panel-bg: rgba(25, 25, 50, 0.9);
+      --accent-color: #50e3c2;
+      --text-color: #e0f7f7;
+      --font-family: 'Roboto', sans-serif;
+      --border-radius: 12px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --button-hover-scale: 1.1;
+      --button-shadow-color: rgba(80, 227, 194, 0.6);
+    }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #000015;
+      font-family: var(--font-family);
+      color: var(--text-color);
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1200px;
+      perspective-origin: 50% 50%;
+    }
+
+    .vr-container {
+      position: relative;
+      width: 900px;
+      max-width: 90vw;
+      height: 600px;
+      background: var(--bg-color);
+      border-radius: var(--border-radius);
+      box-shadow: 0 0 60px #0ffea0aa;
+      transform-style: preserve-3d;
+      padding: 32px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .panel {
+      background: var(--panel-bg);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: 0 0 12px #003333aa inset;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transform-style: preserve-3d;
+      transition: box-shadow var(--transition), transform var(--transition);
+      cursor: pointer;
+    }
+    .panel:focus {
+      outline: none;
+      box-shadow: 0 0 20px var(--accent-color);
+      transform: scale(1.05);
+      z-index: 1;
+    }
+    .panel:hover {
+      box-shadow: 0 0 20px var(--accent-color);
+      transform: scale(1.03);
+      z-index: 1;
+    }
+
+    .panel-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-shadow: 0 0 4px #00a9a5;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: flex-start;
+    }
+
+    button.action {
+      background: transparent;
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
+      padding: 10px 20px;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), background-color var(--transition), color var(--transition);
+      box-shadow: 0 0 6px transparent;
+      flex: 1 1 calc(50% - 14px);
+      min-width: 120px;
+      text-align: center;
+      user-select: none;
+    }
+    button.action:hover,
+    button.action:focus {
+      background-color: var(--accent-color);
+      color: #001d19;
+      transform: scale(var(--button-hover-scale));
+      box-shadow: 0 0 16px var(--button-shadow-color);
+      outline: none;
+    }
+
+    /* Simulated pointer */
+    .pointer {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--accent-color);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.3s ease;
+      z-index: 1000;
+      mix-blend-mode: screen;
+      background-color: rgba(80, 227, 194, 0.3);
+      box-shadow: 0 0 12px var(--accent-color);
+    }
+
+    /* Instruction text overlay */
+    .instructions {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text-color);
+      font-weight: 400;
+      font-size: 0.9rem;
+      user-select: none;
+      opacity: 0.6;
+      letter-spacing: 1.0px;
+      font-style: italic;
+      text-align: center;
+      max-width: 90%;
+      pointer-events: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .vr-container {
+        width: 100vw;
+        height: 80vh;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(3, 1fr);
+        gap: 16px;
+        padding: 16px;
+      }
+      button.action {
+        flex: 1 1 100%;
+        min-width: unset;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="vr-container" role="application" aria-label="AR/VR application interface with intuitive panels and controls">
+    <section class="panel" tabindex="0" role="region" aria-labelledby="panel1-title">
+      <h2 class="panel-title" id="panel1-title">Environment Controls</h2>
+      <div class="buttons">
+        <button class="action" aria-pressed="false" data-action="toggle-lights">Toggle Lights</button>
+        <button class="action" aria-pressed="false" data-action="change-sky">Change Sky</button>
+        <button class="action" aria-pressed="false" data-action="toggle-weather">Toggle Weather</button>
+        <button class="action" aria-pressed="false" data-action="reset-env">Reset Environment</button>
+      </div>
+    </section>
+    <section class="panel" tabindex="0" role="region" aria-labelledby="panel2-title">
+      <h2 class="panel-title" id="panel2-title">User Avatar</h2>
+      <div class="buttons">
+        <button class="action" aria-pressed="false" data-action="customize-avatar">Customize</button>
+        <button class="action" aria-pressed="false" data-action="pose-stand">Pose: Stand</button>
+        <button class="action" aria-pressed="false" data-action="pose-sit">Pose: Sit</button>
+        <button class="action" aria-pressed="false" data-action="animate-dance">Animate: Dance</button>
+      </div>
+    </section>
+    <section class="panel" tabindex="0" role="region" aria-labelledby="panel3-title">
+      <h2 class="panel-title" id="panel3-title">Scene Interaction</h2>
+      <div class="buttons">
+        <button class="action" aria-pressed="false" data-action="grab-object">Grab Object</button>
+        <button class="action" aria-pressed="false" data-action="teleport">Teleport</button>
+        <button class="action" aria-pressed="false" data-action="scale-object">Scale Object</button>
+        <button class="action" aria-pressed="false" data-action="reset-scene">Reset Scene</button>
+      </div>
+    </section>
+    <section class="panel" tabindex="0" role="region" aria-labelledby="panel4-title">
+      <h2 class="panel-title" id="panel4-title">Settings</h2>
+      <div class="buttons">
+        <button class="action" aria-pressed="false" data-action="toggle-vrmode">Toggle VR Mode</button>
+        <button class="action" aria-pressed="false" data-action="toggle-audio">Toggle Audio</button>
+        <button class="action" aria-pressed="false" data-action="calibrate-sensors">Calibrate Sensors</button>
+        <button class="action" aria-pressed="false" data-action="exit-app">Exit App</button>
+      </div>
+    </section>
+    <div class="pointer" aria-hidden="true"></div>
+    <div class="instructions" aria-live="polite">
+      Use Tab to navigate panels and buttons. Click or press Enter/Space to activate.
+    </div>
+  </div>
+
+  <script>
+    // Pointer simulation: track mouse position and highlight hovered buttons
+    const pointer = document.querySelector('.pointer');
+    const panels = [...document.querySelectorAll('.panel')];
+    const buttons = [...document.querySelectorAll('button.action')];
+
+    // Move pointer with mouse
+    document.body.addEventListener('mousemove', e => {
+      pointer.style.left = e.clientX + 'px';
+      pointer.style.top = e.clientY + 'px';
+    });
+
+    // For keyboard navigation simulate pointer on focus
+    buttons.forEach(button => {
+      button.addEventListener('focus', e => {
+        const rect = button.getBoundingClientRect();
+        pointer.style.left = rect.left + rect.width / 2 + 'px';
+        pointer.style.top = rect.top + rect.height / 2 + 'px';
+        pointer.style.opacity = '1';
+      });
+      button.addEventListener('blur', e => {
+        pointer.style.opacity = '0.3';
+      });
+    });
+
+    // Action button behaviors simulation
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Toggle aria-pressed for toggles
+        if(button.getAttribute('aria-pressed') === 'false'){
+          button.setAttribute('aria-pressed','true');
+          button.style.backgroundColor = 'var(--accent-color)';
+          button.style.color = '#001d19';
+          button.style.boxShadow = '0 0 16px var(--button-shadow-color)';
+        } else {
+          button.setAttribute('aria-pressed','false');
+          button.style.backgroundColor = 'transparent';
+          button.style.color = 'var(--accent-color)';
+          button.style.boxShadow = 'none';
+        }
+        // For demonstration: show an alert or console log
+        console.log(`Action triggered: ${button.dataset.action}`);
+      });
+    });
+
+    // Initialize pointer opacity
+    pointer.style.opacity = '0.3';
+
+  </script>
+</body>
+</html>
+
